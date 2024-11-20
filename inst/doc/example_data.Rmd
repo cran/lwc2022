@@ -1,0 +1,144 @@
+---
+title: "Example data"
+author: "Cormac Monaghan"
+date: "`r Sys.Date()`"
+output: 
+  rmarkdown::html_vignette:
+  toc: true
+vignette: >
+  %\VignetteEncoding{UTF-8}
+  %\VignetteIndexEntry{Example data}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+options(rmarkdown.html_vignette.check_title = FALSE)
+```
+
+## Example dataset
+
+There is a small example dataset included in the `lwc2022` package called `cog_data`. The dataset simulates cognitive scores following the methodology used in the the Health and Retirement (HRS), specifically focusing on tasks like word recall, serial subtraction, and backwards counting. These cognitive tasks are the core of the Langa-Weir classification system used to assess cognitive function. 
+
+The simulated dataset contains 10 observations and follows the structure expected by the functions in the package (`extract()`, `score()`, and `classify()`). Below, we detail the steps taken to simulate the dataset.
+
+## Structure of the simulated data
+
+The `cog_data` dataset contains 35 variable. A summary of its structure is presented below:
+
+```{r}
+# Load the package
+library(lwc2022)
+
+# Load the example dataset
+data(cog_data)
+
+# Display the structure of cog_data
+str(cog_data)
+```
+
+The dataset contains variables for individual identifiers, cognition-related tasks (immediate/delayed word recall, serial subtraction, and backwards counting), and other variables necessary for scoring and classification.
+
+### Variable breakdown
+
+- `HHID`: A unique household identifier.
+- `PN`: A unique personal identifier.
+- `SD182M01-SD182M10`: Responses for the Immediate Word Recall task.
+- `SD183M01-SD183M10`: Responses for the Delayed Word Recall task.
+- `SD142-SD146`: Responses for the Serial Subtraction task, where participants are asked to subtract 7 from 100 iteratively five times.
+- `SD124` and `SD129`: Responses for the Backwards Counting task, where participants count backwards from 20. `SD124` represents the first attempt, and `SD129` represents the second attempt.
+- `SD237WA-SD237WT` and `SD238WA-SD238WT`: Responses to a mouse clicking test measuring accuracy, click counts, and click time.
+
+## Generating the data
+
+The `generate_example_data()` function generates a dataset of size $n = 10$, producing a set of cognitive test variables along with unique identifiers. The output dataset is structured similarly to the cognitive assessment data collected in the HRS.
+
+```{r}
+# Simulated dataset
+generate_example_data <- function(n = 10) {
+  data.frame(
+    # Identifiers
+    HHID = sample(100000:999999, n, replace = TRUE),   # Random household ID
+    PN = sample(1:99, n, replace = TRUE),              # Random person number
+
+    # THESE ARE THE VARIABLES USED IN THE LW CLASSIFICATIONS
+    # Immediate word recall (10 items)
+    SD182M1 = sample(c(1:40, 51:67, 96, 98, 99), n, replace = TRUE),
+    SD182M2 = sample(c(1:40, 51:67, 96, 98, 99), n, replace = TRUE),
+    SD182M3 = sample(c(1:40, 51:67, 96, 98, 99), n, replace = TRUE),
+    SD182M4 = sample(c(1:40, 51:67, 96, 98, 99), n, replace = TRUE),
+    SD182M5 = sample(c(1:40, 51:67, 96, 98, 99), n, replace = TRUE),
+    SD182M6 = sample(c(1:40, 51:67, 96, 98, 99), n, replace = TRUE),
+    SD182M7 = sample(c(1:40, 51:67, 96, 98, 99), n, replace = TRUE),
+    SD182M8 = sample(c(1:40, 51:67, 96, 98, 99), n, replace = TRUE),
+    SD182M9 = sample(c(1:40, 51:67, 96, 98, 99), n, replace = TRUE),
+    SD182M10 = sample(c(1:40, 51:67, 96, 98, 99), n, replace = TRUE),
+
+    # Delayed word recall (10 items)
+    SD183M1 = sample(c(1:40, 51:67, 96, 98, 99), n, replace = TRUE),
+    SD183M2 = sample(c(1:40, 51:67, 96, 98, 99), n, replace = TRUE),
+    SD183M3 = sample(c(1:40, 51:67, 96, 98, 99), n, replace = TRUE),
+    SD183M4 = sample(c(1:40, 51:67, 96, 98, 99), n, replace = TRUE),
+    SD183M5 = sample(c(1:40, 51:67, 96, 98, 99), n, replace = TRUE),
+    SD183M6 = sample(c(1:40, 51:67, 96, 98, 99), n, replace = TRUE),
+    SD183M7 = sample(c(1:40, 51:67, 96, 98, 99), n, replace = TRUE),
+    SD183M8 = sample(c(1:40, 51:67, 96, 98, 99), n, replace = TRUE),
+    SD183M9 = sample(c(1:40, 51:67, 96, 98, 99), n, replace = TRUE),
+    SD183M10 = sample(c(1:40, 51:67, 96, 98, 99), n, replace = TRUE),
+
+    # Serial subtraction (Subtracting 7 from 100 five times)
+    SD142 = sample(90:100, n, replace = TRUE),  # First subtraction value
+    SD143 = sample(80:99, n, replace = TRUE),   # Second subtraction
+    SD144 = sample(70:89, n, replace = TRUE),   # Third subtraction
+    SD145 = sample(60:79, n, replace = TRUE),   # Fourth subtraction
+    SD146 = sample(50:69, n, replace = TRUE),   # Fifth subtraction
+
+    # Backwards counting
+    SD124 = sample(0:1, n, replace = TRUE),  # Success on first try (1 = success, 0 = fail)
+    SD129 = sample(0:1, n, replace = TRUE),  # Success on second try (1 = success, 0 = fail)
+
+    # RANDOM VARIABLES NOT USED IN LW CLASSIFICATIONS
+    # Speed Test (Mouse clicking)
+    SD237WA = sample(c(0, 1, -8, -9), n, replace = TRUE),
+    SD237WC = sample(c(0, 1, -8, -9), n, replace = TRUE),
+    SD237WT = sample(c(0, 1, -8, -9), n, replace = TRUE),
+    SD238WA = sample(c(0, 1, -8, -9), n, replace = TRUE),
+    SD238WC = sample(c(0, 1, -8, -9), n, replace = TRUE),
+    SD238WT = sample(c(0, 1, -8, -9), n, replace = TRUE)
+  )
+}
+```
+
+### Parameters
+
+- $n$: The number of observations to generate (default $n = 10$)
+
+### Output
+
+The function returns a dataframe with $n$ rows and the following columns:
+
+- **HHID**: A randomly generated unique household identifier.
+- **PN**: A randomly generated personal number for each individual.
+- **SD182M1 - SD182M10**: Responses for Immediate Word Recall, where values are simulated from a set of codes representing different recall categories.
+- **SD183M1 - SD183M10**: Responses for Delayed Word Recall, with values similarly simulated as above.
+- **SD142 - SD146**: Values from a serial subtraction task, representing five rounds of subtracting 7 from 100 (with random variance for errors).
+- **SD124** and **SD129**: Binary responses representing success (1) or failure (0) on two attempts at backwards counting.
+- **SD237WA** and **SD238WA**: Accuracy responses for a mouse clicking test. Responses are represented as success (1), failure (0), non participation due to technical reasons (-6) or refusal to participate (-8). **SD237WA** indicates the first attempt while **SD238WA** indicates the second attempt.
+- **SD237WC** and **SD238WC**: Responses representing the total number of clicks for a mouse clicking test. **SD237WC** indicates the first attempt while **SD238WC** indicates the second attempt.
+- **SD237WT** and **SD238WT**: Responses representing the total amount of time (in seconds) spent on a mouse clicking test. **SD237WT** indicates the time for the first attempt while **SD238WC** indicates the time for the second attempt.
+
+## Example
+
+```{r}
+set.seed(123)
+
+cog_data <- generate_example_data()
+
+knitr::kable(head(cog_data), caption = "Example of generated cognition data")
+```
+

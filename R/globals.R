@@ -1,0 +1,21 @@
+#' @import utils
+utils::globalVariables(c(
+  "HHID",
+  "PN",
+  "SD142",
+  "SD143",
+  "SD144",
+  "SD145",
+  "SD146",
+  "SD124",
+  "SD125",
+  "SD129",
+  "Sub_1",
+  "Sub_5",
+  "Total_I",
+  "Total_D",
+  "Total_Sub",
+  "Total_Count",
+  "Total_cog_score",
+  "Class"
+))

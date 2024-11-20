@@ -1,0 +1,91 @@
+---
+title: "lwc2022: Generating the Langa-Weir classification of cognitive function for the 2022 Health and Retirement Study cognition data"
+author: "Cormac Monaghan"
+date: "`r Sys.Date()`"
+output: 
+  rmarkdown::html_vignette:
+  toc: true
+vignette: >
+  %\VignetteEncoding{UTF-8}
+  %\VignetteIndexEntry{lwc2022: Generating the Langa-Weir classification of cognitive function for the 2022 Health and Retirement Study cognition data}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+options(rmarkdown.html_vignette.check_title = FALSE)
+```
+
+# Introduction
+
+The `lwc2022` package is specifically developed for generation of the Langa-Weir classification of cognitive function for the 2022 [Health and Retirement Study (HRS)](https://hrsdata.isr.umich.edu/) cognition data. This classification system, developed by researchers David Weir and Kenneth Langa, categorizes individuals into cognitive function groups based on their performance in a set of standardized cognitive assessments.
+
+For previous waves of HRS data (1995 - 2020) there is a [researcher contributed dataset](https://hrsdata.isr.umich.edu/data-products/langa-weir-classification-cognitive-function-1995-2020) of dementia classifications [(Langa, 2020)](https://hrsdata.isr.umich.edu/sites/default/files/documentation/data-descriptions/Data_Description_Langa_Weir_Classifications2016.pdf). This dataset is widely used in research to study the trajectories of cognitive aging, dementia risk, and related health outcomes in older adults. However, with the recent release of the 2022 HRS data, these classifications have yet to be updated. As such, the `lwc2022` package aims to bridge this gap by providing tools that allow researchers to apply the same methodology to the 2022 cognition data.
+
+# Methodological Overview of Langa-Weir Classifications
+
+The Langa-Weir classification of cognitive function is based on performance in several cognitive domains, including:
+
+- **Immediate and delayed word recall:** These tests assess episodic memory by asking respondents to recall a list of 10 words both immediately and after a delay.
+- **Serial subtraction:** This task measures working memory and mental flexibility by having participants subtract 7 from 100 up to five times in a row.
+- **Backwards counting:** Respondents are asked to count backwards from 20, which tests their attention and working memory.
+
+The Langa-Weir methodology involves scoring these tasks and then assigning individuals to one of three cognitive function categories:
+
+- Normal cognition
+- Cognitively impaired, not demented (CIND)
+- Dementia
+
+The classification is based on a total cognitive score that sums the performance across these tasks. Cut-off thresholds are used to determine which category a respondent falls into, with higher scores indicating better cognitive performance.
+
+# What the `lwc2022` package provides
+
+This package offers several key functions to facilitate the generation of the Langa-Weir classifications for the 2022 HRS data. These functions replicate the logic and methodology described in the [Langa-Weir Data Description](https://hrsdata.isr.umich.edu/sites/default/files/documentation/data-descriptions/Data_Description_Langa_Weir_Classifications2016.pdf) for earlier waves. The following key functions are included:
+
+1. **Data extraction:** The `extract()` function pulls out the relevant cognitive test variables from the HRS dataset.
+2. **Scoring:** The `score()` function calculates the cognitive test scores for word recall, serial subtraction, and backwards counting.
+3. **Classification:** The `classify()` function generates cognitive function classifications based on the total score, assigning individuals to normal cognition, CIND, or dementia categories.
+
+## Replicating the Methodology
+
+1. **Immediate and Delayed Word Recall:** Respondents are asked to recall a set of words. The scoring rules applied in `lwc2022` mirror those from prior waves: a score of 1 is given for each word correctly recalled, and a total score for both immediate and delayed recall is computed.
+2. **Serial Subtraction:** Respondents are asked to subtract 7 from 100, then continue subtracting 7 from the resulting number. Points are assigned based on the number of correct subtractions, up to five. The `score_subtraction()` function handles this scoring automatically.
+3. **Backwards Counting:** Respondents are asked to count backwards from 20 to 1. A score of 2 points is given if they succeed on the first try, 1 point if they succeed on the second attempt, and 0 points otherwise. This scoring is incorporated into the `score()` function.
+4. **Summing the Total Cognitive Score:** The total cognitive score is computed by summing the scores across all tests (word recall, serial subtraction, and backwards counting). The total score is used to classify individuals into cognitive function groups:
+
+    - Normal Cognition: A total score of 12 or higher.
+    - Cognitively Impaired, Not Demented (CIND): A score between 7 and 11.
+    - Dementia: A score of 6 or lower
+
+# Example Workflow
+```{r}
+# Installing package
+# devtools::install_github("C-Monaghan/lwc2022")
+
+# Loading package
+library(lwc2022)
+
+# Load the example dataset
+data(cog_data)
+
+# Alternatively load the real HRS 2022 cognition data
+# cog_data <- haven::read_sav(here::here("../path_to_file.sav"))
+
+# Extract the relevant cognitive test variables
+extracted_data <- extract(cog_data)
+
+# Score the cognitive tests
+scored_data <- score(extracted_data)
+
+# Classify individuals based on their total cognitive score
+classified_data <- classify(scored_data)
+
+# View the first few rows of the classified data
+head(classified_data)
+```
+
